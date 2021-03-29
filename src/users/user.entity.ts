@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { IsDate, IsEmail, IsUrl, Length } from "class-validator";
+import { IsDate, IsEmail, Length } from "class-validator";
 import * as bcrypt from "bcrypt";
 import { Field, ObjectType } from "@nestjs/graphql";
 
@@ -20,6 +20,7 @@ export class User {
   username: string;
 
   @Column({
+    name: "password",
     type: "varchar",
     length: "60",
   })
@@ -47,31 +48,6 @@ export class User {
   @Column({ nullable: true })
   phone: string;
 
-  @Column({ nullable: true })
-  @Field()
-  @IsUrl()
-  twitter: string;
-
-  @Column({ nullable: true })
-  @Field()
-  @IsUrl()
-  facebook: string;
-
-  @Column({ nullable: true })
-  @Field()
-  @IsUrl()
-  youtube: string;
-
-  @Column({ nullable: true })
-  @Field()
-  @IsUrl()
-  github: string;
-
-  @Column({ nullable: true })
-  @Field()
-  @IsUrl()
-  website: string;
-
   set password(password) {
     this._password = bcrypt.hashSync(password, 2);
   }
@@ -81,6 +57,6 @@ export class User {
   }
 
   async comparePassword(password) {
-    return await bcrypt.compare(password, this.password);
+    return this._password && (await bcrypt.compare(password, this.password));
   }
 }
